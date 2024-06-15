@@ -1,5 +1,6 @@
 # Stores information about the game configuration and state.
 const piece_state = preload("res://engine/piece/piece_state.gd")
+const physics = preload("res://engine/physics/physics.gd")
 
 # Game Configuration
 var Team = ["white", "black"]
