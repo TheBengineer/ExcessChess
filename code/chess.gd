@@ -11,7 +11,8 @@ const rook_class = preload("res://engine/piece/rook.gd")
 const piece_state_class = preload("res://engine/piece/piece_state.gd")
 const Game_state = preload("res://engine/game_state.gd")
 var Physics
-var game_state = Game_state.new(8, 8)
+var game_state2 = Game_state.new(8, 8)
+var display_state = game_state2
 var bishop = bishop_class.new()
 var king = king_class.new()
 var knight = knight_class.new()
@@ -124,7 +125,7 @@ func from_string(initial_pieces, initial_teams, string):
 	board_width = w
 	board_height = h
 	board.resize(w, h)
-	game_state = Game_state.new(w, h)
+	game_state2 = Game_state.new(w, h)
 	
 
 func setup_setup_default_pieces(initial_pieces, initial_teams):
@@ -162,16 +163,16 @@ func _init(_board, string, physics):
 		piece_cord_array.append(i)
 		id = id+1
 	for i in range(0, piece_state_array.size()):
-		game_state.add(piece_state_array[i], piece_cord_array[i])
+		game_state2.add(piece_state_array[i], piece_cord_array[i])
 	print("hi")
 	var children = get_children()
 	for child in children:
 		board = child
 		#print(board)
 		
-	for i in range(0, game_state.pieces_state.size()):
-		var state = game_state.pieces_state[i]
-		var cord = game_state.pieces_cord[i]
+	for i in range(0, display_state.pieces_state.size()):
+		var state = display_state.pieces_state[i]
+		var cord = display_state.pieces_cord[i]
 		print("piece width: ", state.texture.get_width())
 		board.set_piece(cord, state.texture)
 	
@@ -206,7 +207,7 @@ func tile_clicked(tile: int):#, state_array, cord_array, highlight_array
 		if highlights.has(tile):
 			if(possible_passeant_highlighted.has(tile)):
 				var index = possible_passeant_highlighted.find(tile, 0)
-				game_state.passeant_move(tile_highlighted, tile, possible_passeant_attacked_piece[index])
+				game_state2.passeant_move(tile_highlighted, tile, possible_passeant_attacked_piece[index])
 				if(white_turn):
 					white_turn = false
 				else:
@@ -226,8 +227,8 @@ func tile_clicked(tile: int):#, state_array, cord_array, highlight_array
 	check_for_promotion()
 	is_checkmate(tile_highlighted)
 	#game info stored in game_state
-	piece_cord_array = game_state.pieces_cord
-	piece_state_array = game_state.pieces_state
+	piece_cord_array = game_state2.pieces_cord
+	piece_state_array = game_state2.pieces_state
 	
 	#this is sending the data to the drawer
 	for i  in range(0, board_width*board_height):
@@ -248,13 +249,13 @@ func tile_clicked(tile: int):#, state_array, cord_array, highlight_array
 func check_for_promotion():
 	var state_temp = piece_state_class.new(1, "white", pawn)
 	for i in range(0, board_width):
-		if game_state.has_specific_type(i, state_temp):
-			game_state.state_from_cord(i).change_type(queen)
+		if game_state2.has_specific_type(i, state_temp):
+			game_state2.state_from_cord(i).change_type(queen)
 			break
 	state_temp = piece_state_class.new(1, "black", pawn)
 	for i in range(board_width*(board_height - 1), board_width*board_height):
-		if game_state.has_specific_type(i, state_temp):
-			game_state.state_from_cord(i).change_type(queen)
+		if game_state2.has_specific_type(i, state_temp):
+			game_state2.state_from_cord(i).change_type(queen)
 			break
 
 #returns whether a tile is highlighted
@@ -265,11 +266,11 @@ func highlighted(tile: int, highlights):
 	return false
 
 func do_highlight(tile: int, moving_team):
-	if game_state.state_from_cord(tile) == null:
+	if game_state2.state_from_cord(tile) == null:
 		return
-	if(game_state.state_from_cord(tile).team == moving_team):
+	if(game_state2.state_from_cord(tile).team == moving_team):
 		tile_highlighted = tile
-		highlights = get_moves_of_piece(tile, game_state, true)
+		highlights = get_moves_of_piece(tile, game_state2, true)
 		if highlights.size() > 0:
 			remove_moves_that_kill_king(highlights, tile_highlighted)
 	else:
@@ -277,13 +278,13 @@ func do_highlight(tile: int, moving_team):
 		highlights = []
 
 func move_piece(tile: int, new_tile: int):
-	game_state.move(tile, new_tile)
+	game_state2.move(tile, new_tile)
 	if(white_turn):
 		white_turn = false
 	else:
 		white_turn = true
 	print("move")
-	Physics.update_state(game_state)
+	Physics.update_state(game_state2)
 	
 func get_moves_of_piece(tile: int, game, allow_special_move):
 	var state = game.state_from_cord(tile)
@@ -302,13 +303,13 @@ func is_checkmate(tile_highlighted):
 	var team = "black"
 	if(white_turn):
 		team = "white"
-	var list_pieces_cord = game_state.pieces_cord
+	var list_pieces_cord = game_state2.pieces_cord
 	var moves_from_1_piece
 	for tile in list_pieces_cord:
-		var piece = game_state.state_from_cord(tile)
+		var piece = game_state2.state_from_cord(tile)
 		if piece.team != team:
 			continue
-		moves_from_1_piece = get_moves_of_piece(tile, game_state, false)
+		moves_from_1_piece = get_moves_of_piece(tile, game_state2, false)
 		remove_moves_that_kill_king(moves_from_1_piece, tile)
 		if moves_from_1_piece.size() > 0:
 			return false
@@ -318,17 +319,17 @@ func is_checkmate(tile_highlighted):
 #checks all the moves highlighted, does the move, then checks whether the king is a target.
 #if the king is a target, it is an invalid move, and we remove it.
 func remove_moves_that_kill_king(highlights, tile_highlighted):
-	var team = game_state.state_from_cord(tile_highlighted).team
+	var team = game_state2.state_from_cord(tile_highlighted).team
 	var my_king_tile
 	var list_moves_to_remove = []
 	#find the tile the friendly king is one
-	for i in range(0, game_state.pieces_state.size()):
-		if(game_state.pieces_state[i].type == king and game_state.pieces_state[i].team == team):
-			my_king_tile = game_state.pieces_cord[i]
+	for i in range(0, game_state2.pieces_state.size()):
+		if(game_state2.pieces_state[i].type == king and game_state2.pieces_state[i].team == team):
+			my_king_tile = game_state2.pieces_cord[i]
 	var temp_game
 	#copy the game, and do each available move
 	for i in range(0, highlights.size()):
-		temp_game = game_state.copy(Game_state.new(board_width, board_height))
+		temp_game = game_state2.copy(Game_state.new(board_width, board_height))
 		#check if the king is making the move so we dont loose track of our target tile
 		if tile_highlighted == my_king_tile:
 			my_king_tile = highlights[i]

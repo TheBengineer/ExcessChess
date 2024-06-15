@@ -11,7 +11,7 @@ var moved = null
 
 func init(board):
 	board = board
-	game_state = board.game_state
+	game_state = board.game_state2
 	pass
 	
 # Called when the node enters the scene tree for the first time.
