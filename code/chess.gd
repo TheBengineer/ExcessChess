@@ -282,6 +282,7 @@ func move_piece(tile: int, new_tile: int):
 		white_turn = false
 	else:
 		white_turn = true
+	print("move")
 	Physics.update_state(game_state)
 	
 func get_moves_of_piece(tile: int, game, allow_special_move):
