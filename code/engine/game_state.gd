@@ -1,14 +1,11 @@
 # Stores information about the game configuration and state.
 const piece_state = preload("res://engine/piece/piece_state.gd")
-const physics = preload("res://engine/physics/physics.gd")
 
 # Game Configuration
 var Team = ["white", "black"]
 var width: int
 var height: int
 var max_pos: int
-
-
 
 # Game State
 var pieces_state
@@ -75,6 +72,7 @@ func move(current_tile, new_tile):
 		pieces_state[index].has_just_done_passeant = false
 	pieces_cord[index] = new_tile
 	pieces_state[index].has_moved = true
+	
 	
 func passeant_move(current_tile, new_tile, attacked_piece):
 	var index = index_from_cord(current_tile)

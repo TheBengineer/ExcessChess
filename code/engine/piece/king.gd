@@ -7,6 +7,7 @@ var directions = [[0, 1], [1,1], [1, 0], [1, -1],
 var name = "king"
 
 
+
 # Given game state information, this function returns a list of potentially valid new positions.
 # Arguments:
 # pos: The original position. of the piece.

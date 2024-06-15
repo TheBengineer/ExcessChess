@@ -10,6 +10,7 @@ const queen_class = preload("res://engine/piece/queen.gd")
 const rook_class = preload("res://engine/piece/rook.gd")
 const piece_state_class = preload("res://engine/piece/piece_state.gd")
 const Game_state = preload("res://engine/game_state.gd")
+var Physics
 var game_state = Game_state.new(8, 8)
 var bishop = bishop_class.new()
 var king = king_class.new()
@@ -140,7 +141,8 @@ func setup_setup_default_pieces(initial_pieces, initial_teams):
 	board_width = 8
 	board_height = 8
 
-func _init(_board, string):
+func _init(_board, string, physics):
+	Physics = physics
 	board = _board
 	board.connect("tile_clicked", self, "tile_clicked")
 	var initial_pieces = []
@@ -170,7 +172,7 @@ func _init(_board, string):
 	for i in range(0, game_state.pieces_state.size()):
 		var state = game_state.pieces_state[i]
 		var cord = game_state.pieces_cord[i]
-		print(state.texture.get_width())
+		print("piece width: ", state.texture.get_width())
 		board.set_piece(cord, state.texture)
 	
 	
@@ -280,6 +282,7 @@ func move_piece(tile: int, new_tile: int):
 		white_turn = false
 	else:
 		white_turn = true
+	Physics.update_state(game_state)
 	
 func get_moves_of_piece(tile: int, game, allow_special_move):
 	var state = game.state_from_cord(tile)

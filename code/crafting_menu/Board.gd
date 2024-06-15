@@ -2,7 +2,7 @@ tool #Allow it to work in editor
 extends Control
 
 #This class manages/echos the children
-
+var Physics = null
 var clickable = true
 var new_game
 

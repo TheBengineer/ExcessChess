@@ -1,5 +1,7 @@
 extends Node2D
 const Chess = preload("res://chess.gd")
+var Physics = preload("res://engine/physics/physics.gd")
+var physics
 var board
 var chess
 var custom_board_name = null
@@ -29,8 +31,11 @@ func load_board_string():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	physics = Physics.new()
+	add_child(physics)
 	print("created a chess scene")
 	board = $Board
+	board.Physics = physics
 	print("custom: ", custom_board_name)
 	if custom_board_name == null:
 		start_custom_board(custom_board_name)
@@ -41,11 +46,11 @@ func _ready():
 func start_regular_game():
 	print("starting regular_game in node")
 	#board = $Board
-	chess = Chess.new(board, null)
+	chess = Chess.new(board, null, physics)
 	
 func start_custom_board(board_name):
 	board = $Board
-	chess = Chess.new(board, load_board_string())
+	chess = Chess.new(board, load_board_string(), physics)
 	
 	
 	pass # Replace with function body.
